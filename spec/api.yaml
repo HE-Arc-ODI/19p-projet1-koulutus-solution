@@ -1,0 +1,688 @@
+openapi: 3.0.0
+servers:
+  - url: 'localhost:8080/koulutus/api/'
+info:
+  description: |
+    Koulutus (meaning education in Finnish) is an api to manage training programs.
+  version: "1.0.0-oas3"
+  title: Koulutus training programs API
+tags:
+  - name: Program
+    description: People follow training program to develop specific skills. A program is composed of multiple courses.
+  - name: Course
+    description: A course takes place each quarter. It belongs to a program and is composed of a number of sessions.
+  - name: Session
+    description: The sessions composing the course are scheduled along the quarter.
+  - name: Participant
+    description: A participant can register to courses and they attend the different sessions. When they have completed the sessions, they receive a certificate for the training program.
+paths:
+  /program:
+    get:
+      tags:
+        - Program
+      summary: List all training programs
+      operationId: getPrograms
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Program'
+    post:
+      tags:
+        - Program
+      summary: Create a new training program
+      operationId: addProgram
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Program'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Program'
+  /program/{programId}:
+    get:
+      tags:
+        - Program
+      summary: View the details of a training program
+      operationId: getProgramByCode
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          description: id of the program to retrieve
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Program'
+    delete:
+      tags:
+        - Program
+      summary: Delete an existing training program
+      operationId: deleteProgramByCode
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          description: id of the program to delete
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+    put:
+      tags:
+        - Program
+      summary: update an existing training program. Returns the updated training program.
+      operationId: updateProgram
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          description: id of the program to update
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Program'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Program'
+  /program/{programId}/course:
+    get:
+      tags:
+        - Course
+      summary: Get all course for a given program
+      operationId: getCoursesByProgramId
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          description: id of the program
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+    post:
+      tags:
+        - Course
+      summary: Add a new course to an existing program
+      operationId: addCourse
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          description: id of the program in which the course have to be added
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Course'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+  /program/{programId}/course/{courseId}:
+    get:
+      tags:
+        - Course
+      summary: Detail of a course for a given program
+      operationId: getCourseById
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          description: id of the program
+          schema:
+            type: integer
+        - name: courseId
+          in: path
+          required: true
+          description: id of the course that have to be getted
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+    delete:
+      tags:
+        - Course
+      summary: delete a course for a given program
+      operationId: deleteCourseById
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          description: id of the program
+          schema:
+            type: integer
+        - name: courseId
+          in: path
+          required: true
+          description: id of the course that have to be deleted
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+    put:
+      tags:
+        - Course
+      summary: Update an existing course. Returns the updated course
+      operationId: updateCourse
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          description: id of the program
+          schema:
+            type: integer
+        - name: courseId
+          in: path
+          required: true
+          description: id of the course to update
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Course'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+  /program/{programId}/course/{courseId}/participant:
+    get:
+      tags:
+        - Course
+      summary: get participants list for a given course
+      operationId: getParticipantsList
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          description: id of the program
+          schema:
+            type: integer
+        - name: courseId
+          in: path
+          required: true
+          description: id of the course
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Participant'
+  /program/{programId}/course/{courseId}/session:
+    get:
+      tags:
+        - Session
+      summary: List all sessions for a given course and program
+      operationId: getAllSessionFromCourseId
+      parameters:
+        - name: programId
+          in: path
+          description: id of the program
+          required: true
+          schema:
+            type: integer
+        - name: courseId
+          in: path
+          description: id of the course
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
+    post:
+      tags:
+        - Session
+      summary: Create new session(s) for a given course and program
+      operationId: createSessionsCourseById
+      parameters:
+        - name: programId
+          in: path
+          description: id of the program
+          required: true
+          schema:
+            type: integer
+        - name: courseId
+          in: path
+          description: id of the course
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Session'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
+  /program/{programId}/course/{courseId}/session/{sessionId}:
+    get:
+      tags:
+        - Session
+      summary: Details of a session for a given course and program
+      operationId: getSessionById
+      parameters:
+        - name: programId
+          in: path
+          description: id of the program
+          required: true
+          schema:
+            type: integer
+        - name: courseId
+          in: path
+          description: id of the course
+          required: true
+          schema:
+            type: integer
+        - name: sessionId
+          in: path
+          description: id of the session
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+    delete:
+      tags:
+        - Session
+      summary: delete a session by id for a given course and program
+      operationId: deleteSessionById
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          description: id of the program
+          schema:
+            type: integer
+        - name: courseId
+          in: path
+          required: true
+          description: id of the course
+          schema:
+            type: integer
+        - name: sessionId
+          in: path
+          required: true
+          description: id of the session that have to be deleted
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+    put:
+      tags:
+        - Session
+      summary: Modify an existing session. Returns the updated session
+      operationId: modifySession
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          description: id of the program
+          schema:
+            type: integer
+        - name: courseId
+          in: path
+          required: true
+          description: id of the course
+          schema:
+            type: integer
+        - name: sessionId
+          in: path
+          required: true
+          description: id of the session to update
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Session'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+
+  /participant:
+    get:
+      tags:
+        - Participant
+      summary: List all participants
+      operationId: getParticipants
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Participant'
+    post:
+      tags:
+        - Participant
+      summary: Add a new Participant
+      operationId: addParticipant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Participant'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participant'
+  /participant/{participantId}:
+    get:
+      tags:
+        - Participant
+      summary: Detail of a participant
+      operationId: getParticipantById
+      parameters:
+        - name: participantId
+          in: path
+          required: true
+          description: id of the participant that have to be getted
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participant'
+    delete:
+      tags:
+        - Participant
+      summary: Delete an existing participant by id
+      operationId: deleteParticipantById
+      parameters:
+        - name: participantId
+          in: path
+          required: true
+          description: id of the person that have to be deleted
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+    put:
+      tags:
+        - Participant
+      summary: Modify an existing participant
+      operationId: modifyParticipant
+      parameters:
+        - name: participantId
+          in: path
+          required: true
+          description: id of the person that have to be modified
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Participant'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participant'
+  /participant/{participantId}/summary:
+    get:
+      tags:
+        - Participant
+      summary: List all courses in which a participant is registered
+      operationId: getAllParticipantCourses
+      parameters:
+        - name: participantId
+          in: path
+          description: id of the participant
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+
+  /program/{programId}/course/{courseId}/participant/{participantId}:
+    post:
+      tags:
+        - Participant
+      summary: Register a participant to a course
+      operationId: registerParticipantToCourse
+      parameters:
+        - name: programId
+          in: path
+          description: id of the program
+          required: true
+          schema:
+            type: integer
+        - name: courseId
+          in: path
+          description: id of the course
+          required: true
+          schema:
+            type: integer
+        - name: participantId
+          in: path
+          description: id of the Participant
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+externalDocs:
+  description: Find out more about Swagger
+  url: 'http://swagger.io'
+components:
+  schemas:
+    Program:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1004
+          readOnly: true
+        name:
+          type: string
+          example: "Cuisine coréenne"
+        richDescription:
+          type: string
+          example: "Le Pays du matin calme se situe à la confluence entre la Chine et le Japon. Dans ce contexte spécifique, la cuisine coréenne, si elle semble plonger ses racines dans les traditions culinaires de ses voisins..."
+        field:
+          type: string
+          example: "Gatronomie"
+        price:
+          type: number
+          format: integer
+          example: 150
+        courses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Course"
+          readOnly: true
+      xml:
+        name: Program
+      required:
+        - name
+        - richDescription
+        - field
+        - price
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1004
+          readOnly: true
+        quarter:
+          type: integer
+          format: int32
+          enum: [1,2,3,4]
+          example: "2"
+        year:
+          type: integer
+          format: int32
+          example: 2018
+        maxNumberOfParticipants:
+          type: integer
+          format: int32
+          example: 5
+        status:
+          type: string
+          enum: ["OPEN","CONFIRMED","CANCELLED"]
+          readOnly: true
+        sessions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Session"
+          readOnly: true
+      xml:
+        name: Course
+    Session:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 2020
+          readOnly: true
+        startDateTime:
+          type: string
+          format: date-time
+          example: "20.10.2018 17:00"
+        endDateTime:
+          type: string
+          format: date-time
+          example: "20.10.2018 19:00"
+        price:
+          type: number
+          format: double
+          example: 45.0
+        room:
+          type: string
+          example: "B14"
+      xml:
+        name: Session
+    Participant:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 3010
+          readOnly: true
+        firstName:
+          type: string
+          example: Sabrina
+        lastName:
+          type: string
+          example: Hillow
+        birthdate:
+          type: string
+          format: date
+          example: "15.03.1997"
+        courses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Course"
+          readOnly: true
+      xml:
+        name: Participant

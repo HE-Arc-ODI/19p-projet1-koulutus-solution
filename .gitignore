@@ -1,0 +1,6 @@
+target
+*.log
+
+# IntelliJ Idea project files
+.idea
+*.iml
